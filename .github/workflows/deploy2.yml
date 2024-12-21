@@ -29,9 +29,13 @@ jobs:
         run: npm install
 
       - name: Debug BASE_URL
+        env:
+          BASE_URL: ${{ vars.BASE_URL }}
         run: echo "BASE_URL is $BASE_URL"
 
       - name: Build project
+        env:
+          BASE_URL: ${{ vars.BASE_URL }}
         run: npm run build
 
       - name: Configure Pages
