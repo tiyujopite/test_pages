@@ -32,11 +32,5 @@ jobs:
 
           echo "commit_args=$ARGS" >> $GITHUB_OUTPUT
 
-      - name: Check current directory
-        run: pwd
-
-      - name: List files in the current directory
-        run: ls -R
-
       - name: Run Python script with arguments
         run: python test.py ${{ steps.extract_args.outputs.commit_args }}
