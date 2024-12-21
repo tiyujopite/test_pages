@@ -1,0 +1,10 @@
+{
+    "modules": [
+        {
+            "key": "module1/1"
+        },
+        {
+            "key": "module2/2"
+        }
+    ]
+}
