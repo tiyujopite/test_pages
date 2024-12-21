@@ -28,18 +28,24 @@ jobs:
       - name: Extract arguments from new commits
         id: extract_args
         run: |
+          # Obtener los commits del PR
           COMMITS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits" | jq -r '.[].sha')
 
           ARGS=""
           for COMMIT in $COMMITS; do
-            # Extraer cambios del archivo "modules.json" en cada commit
+            # Extraer diferencias para el archivo `modules.json`
             DIFF=$(git diff $COMMIT~1 $COMMIT -- modules.json || true)
-            NEW_KEYS=$(echo "$DIFF" | grep '^+' | grep '"key"' | jq -r '.key' || true)
+
+            # Filtrar líneas añadidas que contengan "key" y extraer su valor
+            NEW_KEYS=$(echo "$DIFF" | grep '^+' | grep '"key"' | sed -E 's/.*"key": *"([^"]+)".*/\1/' || true)
+
+            # Agregar los valores extraídos a los argumentos
             ARGS="$ARGS $NEW_KEYS"
           done
 
-          # Pasar los argumentos extraídos como salida
-          echo "commit_args=$(echo $ARGS | tr -s ' ')" >> $GITHUB_OUTPUT
+          # Limpiar los argumentos y configurarlos como salida
+          ARGS=$(echo "$ARGS" | tr -s ' ')
+          echo "commit_args=$ARGS" >> $GITHUB_OUTPUT
 
       - name: Run Python script with arguments
         run: python test.py ${{ steps.extract_args.outputs.commit_args }}
