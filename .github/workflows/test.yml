@@ -34,7 +34,7 @@ jobs:
           ARGS=""
           for COMMIT in $COMMITS; do
             # Extraer diferencias para el archivo `modules.json`
-            DIFF=$(git show $COMMIT -- modules.json)
+            DIFF=$(git show $COMMIT -- modules.json || true)
 
             # Filtrar líneas añadidas que contengan "key" y extraer su valor
             NEW_KEYS=$(echo "$DIFF" | grep '^+' | grep '"key"' | sed -E 's/.*"key": *"([^"]+)".*/\1/' || true)
